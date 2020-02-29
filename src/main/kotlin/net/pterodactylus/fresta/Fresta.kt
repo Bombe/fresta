@@ -24,9 +24,12 @@ import io.ktor.features.StatusPages
 import io.ktor.http.ContentType.Text
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
+import io.ktor.routing.put
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -49,8 +52,14 @@ fun main() {
 			}
 		}
 		routing {
-			get("/config") {
-				call.respond(configEndpoint.getConfig())
+			route("/config") {
+				get {
+					call.respond(configEndpoint.getConfig())
+				}
+				put {
+					val options = call.receive<Map<String, String>>()
+					call.respond(configEndpoint.setConfig(options))
+				}
 			}
 			get("/") {
 				call.respondText("OK", Text.Plain)
