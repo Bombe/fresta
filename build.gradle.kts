@@ -32,12 +32,7 @@ application {
 }
 
 tasks {
-    named<KotlinCompile>("compileKotlin") {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-    named<KotlinCompile>("compileTestKotlin") {
+    withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
         }
