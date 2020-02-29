@@ -16,10 +16,10 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    compile(group = "io.ktor", name = "ktor-server-netty", version = "1.3.1")
-    compile(group = "io.ktor", name = "ktor-jackson", version = "1.3.1")
+    implementation(group = "io.ktor", name = "ktor-server-netty", version = "1.3.1")
+    implementation(group = "io.ktor", name = "ktor-jackson", version = "1.3.1")
 
-    compile(group = "net.pterodactylus", name = "jFCPlib", version = "0.1.7-SNAPSHOT")
+    implementation(group = "net.pterodactylus", name = "jFCPlib", version = "0.1.7-SNAPSHOT")
 
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.6.0")
     testImplementation(group = "org.junit.platform", name = "junit-platform-runner", version = "1.6.0")
