@@ -20,7 +20,9 @@ package net.pterodactylus.fresta
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
 import io.ktor.http.ContentType.Text
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -32,12 +34,18 @@ import net.pterodactylus.fcp.FcpConnection
 import net.pterodactylus.fcp.highlevel.FcpClient
 import net.pterodactylus.fresta.config.ConfigEndpoint
 import net.pterodactylus.fresta.config.FcpConfigService
+import net.pterodactylus.fresta.fcp.AccessDenied
 
 fun main() {
 	fcpClient.connect("fresta")
 	embeddedServer(Netty, 7777) {
 		install(ContentNegotiation) {
 			jackson {
+			}
+		}
+		install(StatusPages) {
+			exception<AccessDenied> {
+				call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
 			}
 		}
 		routing {
