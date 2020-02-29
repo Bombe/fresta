@@ -24,7 +24,7 @@ import net.pterodactylus.fresta.fcp.AccessDenied
 class FcpConfigService(private val fcpClient: FcpClient) : ConfigService {
 
 	override val config: Configuration
-		get() = try {
+		get() = convertExceptions(protocolError24ToAccessDenied) {
 			fcpClient.config.entries
 					.map { (key, value) -> key.split(".").let { it.drop(1).joinToString(".") to (it.first() to value) } }
 					.groupBy(Pair<String, Pair<String, String>>::first, Pair<String, Pair<String, String>>::second)
@@ -34,21 +34,24 @@ class FcpConfigService(private val fcpClient: FcpClient) : ConfigService {
 								longDescription = value["longDescription"], dataType = value["dataType"], expert = value["expertFlag"]?.toBoolean(),
 								forceWrite = value["forceWriteFlag"]?.toBoolean(), sortOrder = value["sortOrder"]?.toInt())
 					}
-		} catch (e: FcpProtocolException) {
-			throw when (e.code) {
-				24 -> AccessDenied(e)
-				else -> e
-			}
 		}
 
 	override fun setConfig(options: List<Pair<String, String>>) =
-			try {
+			convertExceptions(protocolError24ToAccessDenied) {
 				fcpClient.modifyConfig(options.toMap())
-			} catch (e: FcpProtocolException) {
-				throw when (e.code) {
-					24 -> AccessDenied(e)
-					else -> e
-				}
 			}
 
+}
+
+private typealias ExceptionConversion = Pair<(Throwable) -> Boolean, (Throwable) -> Throwable>
+
+private val protocolError24ToAccessDenied: ExceptionConversion =
+		{ e: Throwable -> e is FcpProtocolException && e.code == 24 } to ::AccessDenied
+
+private fun <T> convertExceptions(vararg exceptions: ExceptionConversion, action: () -> T): T = try {
+	action()
+} catch (t: Throwable) {
+	exceptions.firstOrNull { it.first(t) }
+			?.let { throw it.second(t) }
+			?: throw t
 }
