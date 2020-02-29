@@ -1,5 +1,7 @@
 # fresta: a Freenet REST API
 
+![Build (Java 8)](https://github.com/Bombe/fresta/workflows/Build%20(Java%208)/badge.svg?branch=next)
+
 The Freenet REST API is an attempt to let clients access Freenet using a simple
 API for which more clients are available. It is also hoped that client
 applications can use this API to access a Freenet node on a remote server,
