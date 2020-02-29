@@ -18,7 +18,6 @@
 package net.pterodactylus.fresta.config
 
 import net.pterodactylus.fcp.highlevel.FcpClient
-import net.pterodactylus.fcp.highlevel.FcpException
 import net.pterodactylus.fcp.highlevel.FcpProtocolException
 import net.pterodactylus.fresta.fcp.AccessDenied
 import org.hamcrest.Description
