@@ -22,4 +22,8 @@ class ConfigEndpoint(private val configService: ConfigService) {
 	fun getConfig() =
 			configService.config
 
+	fun setConfig(options: Map<String, String>) {
+		configService.setConfig(options.toList())
+	}
+
 }

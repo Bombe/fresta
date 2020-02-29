@@ -18,6 +18,8 @@
 package net.pterodactylus.fresta.config
 
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.containsInAnyOrder
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.sameInstance
 import org.junit.jupiter.api.Test
 
@@ -30,6 +32,16 @@ internal class ConfigEndpointTest {
 				.overrideConfig { config }
 		val endpoint = ConfigEndpoint(service)
 		assertThat(endpoint.getConfig(), sameInstance(config))
+	}
+
+	@Test
+	fun `method to put config forwards options to service`() {
+		var receivedOptions: List<Pair<String, String>> = emptyList()
+		val service = mockConfigService
+				.overrideSetConfig { receivedOptions = it }
+		val endpoint = ConfigEndpoint(service)
+		endpoint.setConfig(mapOf("foo" to "bar", "baz" to "quo"))
+		assertThat(receivedOptions, containsInAnyOrder(equalTo("foo" to "bar"), equalTo("baz" to "quo")))
 	}
 
 }
