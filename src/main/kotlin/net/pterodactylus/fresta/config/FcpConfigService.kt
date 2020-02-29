@@ -18,18 +18,27 @@
 package net.pterodactylus.fresta.config
 
 import net.pterodactylus.fcp.highlevel.FcpClient
+import net.pterodactylus.fcp.highlevel.FcpProtocolException
+import net.pterodactylus.fresta.fcp.AccessDenied
 
 class FcpConfigService(private val fcpClient: FcpClient) : ConfigService {
 
 	override val config: Configuration
-		get() = fcpClient.config.entries
-				.map { (key, value) -> key.split(".").let { it.drop(1).joinToString(".") to (it.first() to value) } }
-				.groupBy(Pair<String, Pair<String, String>>::first, Pair<String, Pair<String, String>>::second)
-				.mapValues { it.value.toMap() }
-				.mapValues { (_, value) ->
-					ConfigurationValue(current = value["current"], default = value["default"], shortDescription = value["shortDescription"],
-							longDescription = value["longDescription"], dataType = value["dataType"], expert = value["expertFlag"]?.toBoolean(),
-							forceWrite = value["forceWriteFlag"]?.toBoolean(), sortOrder = value["sortOrder"]?.toInt())
-				}
+		get() = try {
+			fcpClient.config.entries
+					.map { (key, value) -> key.split(".").let { it.drop(1).joinToString(".") to (it.first() to value) } }
+					.groupBy(Pair<String, Pair<String, String>>::first, Pair<String, Pair<String, String>>::second)
+					.mapValues { it.value.toMap() }
+					.mapValues { (_, value) ->
+						ConfigurationValue(current = value["current"], default = value["default"], shortDescription = value["shortDescription"],
+								longDescription = value["longDescription"], dataType = value["dataType"], expert = value["expertFlag"]?.toBoolean(),
+								forceWrite = value["forceWriteFlag"]?.toBoolean(), sortOrder = value["sortOrder"]?.toInt())
+					}
+		} catch (e: FcpProtocolException) {
+			throw when(e.code) {
+				24 -> AccessDenied(e)
+				else -> e
+			}
+		}
 
 }

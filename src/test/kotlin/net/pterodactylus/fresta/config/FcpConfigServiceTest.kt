@@ -18,6 +18,9 @@
 package net.pterodactylus.fresta.config
 
 import net.pterodactylus.fcp.highlevel.FcpClient
+import net.pterodactylus.fcp.highlevel.FcpException
+import net.pterodactylus.fcp.highlevel.FcpProtocolException
+import net.pterodactylus.fresta.fcp.AccessDenied
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
@@ -26,6 +29,7 @@ import org.hamcrest.Matchers.equalTo
 import org.hamcrest.TypeSafeDiagnosingMatcher
 import org.hamcrest.collection.IsMapContaining.hasEntry
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 
 internal class FcpConfigServiceTest {
@@ -108,6 +112,17 @@ internal class FcpConfigServiceTest {
 		val configService = FcpConfigService(fcpClient)
 		val configuration = configService.config
 		configuration.verifyEntries(matchBySortOrder, ::getIntValue)
+	}
+
+	@Test
+	fun `protocol error 24 (access denied) results in access denied exception`() {
+		val fcpClient = object : FcpClient() {
+			override fun getConfig() = throw FcpProtocolException(24, "", "", true)
+		}
+		val configService = FcpConfigService(fcpClient)
+		assertThrows<AccessDenied> {
+			configService.config
+		}
 	}
 
 }
