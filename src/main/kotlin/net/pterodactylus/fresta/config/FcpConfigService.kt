@@ -41,4 +41,14 @@ class FcpConfigService(private val fcpClient: FcpClient) : ConfigService {
 			}
 		}
 
+	override fun setConfig(options: List<Pair<String, String>>) =
+			try {
+				fcpClient.modifyConfig(options.toMap())
+			} catch (e: FcpProtocolException) {
+				throw when (e.code) {
+					24 -> AccessDenied(e)
+					else -> e
+				}
+			}
+
 }

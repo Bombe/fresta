@@ -23,10 +23,16 @@ fun ConfigService.overrideConfig(override: () -> Configuration): ConfigService =
 	override val config: Configuration get() = override()
 }
 
+fun ConfigService.overrideSetConfig(override: (options: List<Pair<String, String>>) -> Unit): ConfigService = object : DelegatingConfigService(this) {
+	override fun setConfig(options: List<Pair<String, String>>) = override(options)
+}
+
 private class MockConfigService : ConfigService {
 
 	override val config: Configuration =
 			emptyMap()
+
+	override fun setConfig(options: List<Pair<String, String>>) = Unit
 
 }
 
@@ -34,5 +40,8 @@ private open class DelegatingConfigService(private val configService: ConfigServ
 
 	override val config: Configuration
 		get() = configService.config
+
+	override fun setConfig(options: List<Pair<String, String>>) =
+			configService.setConfig(options)
 
 }

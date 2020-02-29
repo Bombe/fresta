@@ -124,6 +124,31 @@ internal class FcpConfigServiceTest {
 		}
 	}
 
+	@Test
+	fun `setting options calls fcp client correctly`() {
+		var receivedOptions: Map<String, String> = emptyMap()
+		val fcpClient = object : FcpClient() {
+			override fun modifyConfig(options: Map<String, String>) {
+				receivedOptions = options
+			}
+		}
+		val configService = FcpConfigService(fcpClient)
+		configService.setConfig(listOf("foo" to "bar", "baz" to "quo"))
+		assertThat(receivedOptions, equalTo(mapOf("foo" to "bar", "baz" to "quo")))
+	}
+
+	@Test
+	fun `protocol error 24 (access denied) on ModifyConfig results in access denied exception`() {
+		val fcpClient = object : FcpClient() {
+			override fun modifyConfig(options: MutableMap<String, String>?) =
+					throw FcpProtocolException(24, "", "", true)
+		}
+		val configService = FcpConfigService(fcpClient)
+		assertThrows<AccessDenied> {
+			configService.setConfig(emptyList())
+		}
+	}
+
 }
 
 private fun getStringValue(option: String): String = "$option-value"

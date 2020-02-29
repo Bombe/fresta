@@ -21,6 +21,8 @@ interface ConfigService {
 
 	val config: Configuration
 
+	fun setConfig(options: List<Pair<String, String>>)
+
 }
 
 typealias Configuration = Map<String, ConfigurationValue>
