@@ -44,8 +44,7 @@ tasks {
             )
         }
     }
-}
-
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    withType<Test> {
+        useJUnitPlatform()
+    }
 }
