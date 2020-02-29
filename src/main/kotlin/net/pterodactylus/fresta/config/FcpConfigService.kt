@@ -35,7 +35,7 @@ class FcpConfigService(private val fcpClient: FcpClient) : ConfigService {
 								forceWrite = value["forceWriteFlag"]?.toBoolean(), sortOrder = value["sortOrder"]?.toInt())
 					}
 		} catch (e: FcpProtocolException) {
-			throw when(e.code) {
+			throw when (e.code) {
 				24 -> AccessDenied(e)
 				else -> e
 			}

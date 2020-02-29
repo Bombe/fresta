@@ -160,7 +160,7 @@ private fun isConfigurationValue(
 		expertFlag: Matcher<Boolean> = anything(),
 		forceWriteFlag: Matcher<Boolean> = anything(),
 		sortOrder: Matcher<Int> = anything()
-) : Matcher<ConfigurationValue> = object : TypeSafeDiagnosingMatcher<ConfigurationValue>() {
+): Matcher<ConfigurationValue> = object : TypeSafeDiagnosingMatcher<ConfigurationValue>() {
 	override fun matchesSafely(item: ConfigurationValue, mismatchDescription: Description): Boolean {
 		if (!current.matches(item.current)) {
 			current.describeMismatch(item.current, mismatchDescription)
@@ -211,7 +211,7 @@ private fun isConfigurationValue(
 }
 
 @Suppress("UNCHECKED_CAST")
-private fun <T> anything() : Matcher<T> = Matchers.anything() as Matcher<T>
+private fun <T> anything(): Matcher<T> = Matchers.anything() as Matcher<T>
 
 private fun createConfigMap(prefix: String, value: (String) -> Any): Map<String, String> {
 	return mapOf(
