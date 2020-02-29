@@ -38,6 +38,8 @@ import net.pterodactylus.fcp.highlevel.FcpClient
 import net.pterodactylus.fresta.config.ConfigEndpoint
 import net.pterodactylus.fresta.config.FcpConfigService
 import net.pterodactylus.fresta.fcp.AccessDenied
+import net.pterodactylus.fresta.key.FcpKeyService
+import net.pterodactylus.fresta.key.KeyEndpoint
 
 fun main() {
 	fcpClient.connect("fresta")
@@ -61,6 +63,11 @@ fun main() {
 					call.respond(configEndpoint.setConfig(options))
 				}
 			}
+			route("/keypair") {
+				get {
+					call.respond(keyEndpoint.generateKey())
+				}
+			}
 			get("/") {
 				call.respondText("OK", Text.Plain)
 			}
@@ -73,5 +80,9 @@ private const val freenetPort = 9481
 
 private val fcpConnection = FcpConnection(freenetHost, freenetPort)
 private val fcpClient = FcpClient(fcpConnection, false)
+
 private val configService = FcpConfigService(fcpClient)
+private val keyService = FcpKeyService(fcpClient)
+
 private val configEndpoint = ConfigEndpoint(configService)
+private val keyEndpoint = KeyEndpoint(keyService)
