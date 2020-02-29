@@ -114,7 +114,7 @@ internal class FcpConfigServiceTest {
 	}
 
 	@Test
-	fun `protocol error 24 (access denied) results in access denied exception`() {
+	fun `protocol error 24 (access denied) on GetConfig results in access denied exception`() {
 		val fcpClient = object : FcpClient() {
 			override fun getConfig() = throw FcpProtocolException(24, "", "", true)
 		}
